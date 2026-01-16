@@ -10,7 +10,7 @@
 
     The following screenshot shows the `hello-world-vm` successfully created and running in the GCP Compute Engine console after running `terraform apply`.
 
-    ![Successful VM Creation](docs/hello-world-vm-success.png)
+    ![Successful VM Creation](/projects/01-hello-cloud-vm/docs/hello-world-vm-success.png)
 
     ---
 
