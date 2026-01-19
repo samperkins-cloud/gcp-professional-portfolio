@@ -8,7 +8,7 @@ The pipeline automatically ingests CSV files uploaded to a Cloud Storage bucket,
 
 ## Architecture Diagram
 
-![Architecture Diagram](docs/02-architecture-diagram.png)
+![Architecture Diagram](docs/_02-architecture-diagram (6).png)
 
 ## Key Features
 
