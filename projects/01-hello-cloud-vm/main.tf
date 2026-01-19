@@ -1,44 +1,34 @@
-# This block tells Terraform which providers we need. In this case, we need the Google Cloud provider.
+# Specifies the required provider for this configuration.
 terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "5.6.0" # Using a specific version is a best practice
+      version = "5.6.0" # Pinning the provider version ensures consistent deployments.
     }
   }
 }
 
-# This block configures the Google Cloud provider.
-# You need to tell it which project and region to work in.
+# Configures the Google Cloud provider with the target project and region.
 provider "google" {
-  # --- IMPORTANT ---
-  # Replace "your-gcp-project-id" with your actual Google Cloud Project ID.
-  # You can find this on the main dashboard of the Google Cloud Console.
+  # Replace with your actual Google Cloud Project ID.
   project = "project-86a83b40-693f-4462-a18"
   region  = "us-east4"
 }
 
-# This is the main part: the "resource" block.
-# It tells Terraform that we want to create a Google Compute Engine virtual machine.
+# Provisions a Google Compute Engine virtual machine.
 resource "google_compute_instance" "hello_world_vm" {
-  # The name of the VM that will be created in Google Cloud.
   name         = "hello-world-vm"
-
-  # The type of machine to create. "e2-micro" is part of the Always Free tier!
-  machine_type = "e2-micro"
-
-  # The zone to create the VM in. This must be within the provider's region.
+  machine_type = "e2-micro" # A cost-effective machine type eligible for the GCP Free Tier.
   zone         = "us-east4-a"
 
-  # Defines the boot disk for the VM (the operating system).
+  # Configures the VM's boot disk with a Debian 11 image.
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-11"
     }
   }
 
-  # Defines the network interface. This allows the VM to connect to the network.
-  # The "default" network is automatically created in every GCP project.
+  # Attaches the VM to the default network to enable connectivity.
   network_interface {
     network = "default"
   }
