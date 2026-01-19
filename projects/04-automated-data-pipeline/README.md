@@ -8,8 +8,7 @@ The pipeline automatically ingests CSV files uploaded to a Cloud Storage bucket,
 
 ## Architecture Diagram
 
-![Architecture Diagram](images/02-architecture-diagram.png)
-*(You would place your architecture diagram screenshot in an 'images' folder in your repo)*
+![Architecture Diagram](docs/02-architecture-diagram.png)
 
 ## Key Features
 
