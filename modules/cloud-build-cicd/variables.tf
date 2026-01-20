@@ -19,3 +19,13 @@ variable "app_source_path" {
   description = "The path to the application source code for the Docker build."
   type        = string
 }
+
+variable "connection_name" {
+  description = "The name of the Cloud Build host connection (e.g., 'github-connection')."
+  type        = string
+}
+
+variable "connection_region" {
+  description = "The region where the Cloud Build host connection was created."
+  type        = string
+}

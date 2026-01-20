@@ -19,7 +19,7 @@ variable "container_image_url" {
 }
 
 variable "deletion_protection_enabled" {
-    description = "Whether to enable deletion protection for the Cloud Run service."
-    type        = bool
-    default     = true # By default, all services should be protected.
+  description = "Whether to enable deletion protection for the Cloud Run service."
+  type        = bool
+  default     = true # By default, all services should be protected.
 }

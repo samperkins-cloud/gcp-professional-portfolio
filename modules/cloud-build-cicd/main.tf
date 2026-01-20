@@ -12,9 +12,8 @@ resource "google_cloudbuild_trigger" "github_trigger" {
   name     = "deploy-${var.app_name}-on-push-to-main"
   location = "global" # Cloud Build triggers can be global
 
-  github {
-    owner = var.github_owner
-    name  = var.github_repo_name
+  repository_event_config {
+    repository = "sammypk23-gcp-cloud-engineer-portfolio"
     push {
       branch = var.branch_name
     }
