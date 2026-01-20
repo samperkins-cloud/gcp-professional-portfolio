@@ -32,7 +32,7 @@ resource "google_compute_subnetwork" "private_subnet" {
   ip_cidr_range = "10.0.1.0/24"
   region        = "us-east4"
   # Associates this subnet with the VPC defined above.
-  network       = google_compute_network.the_fortress_vpc.id
+  network = google_compute_network.the_fortress_vpc.id
 }
 
 # Establishes a baseline security posture by denying all ingress traffic.
