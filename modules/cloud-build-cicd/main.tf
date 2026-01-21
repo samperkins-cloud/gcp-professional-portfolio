@@ -41,7 +41,7 @@ resource "google_artifact_registry_repository" "docker_repo" {
 resource "google_cloudbuild_trigger" "github_trigger" {
   project  = var.project_id
   name     = "deploy-${var.app_name}-on-push-to-main"
-  location = "global"
+  location = var.location
 
   # THIS IS THE CORRECT LOCATION FOR THE SERVICE ACCOUNT
   service_account = google_service_account.trigger_sa.id
