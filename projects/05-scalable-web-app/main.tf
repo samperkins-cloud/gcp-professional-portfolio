@@ -5,7 +5,7 @@ provider "google" {
 
 # --- Call the Reusable VPC Module ---
 module "vpc" {
-  source       = "../../modules/vpc" # This is the path to your module
+  source       = "../../modules/vpc"
   project_id   = var.project_id
   network_name = "scalable-app-vpc"
 }

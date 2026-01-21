@@ -5,7 +5,7 @@ variable "project_id" {
   default     = "my-portfolio-project-v2-484602" # Your current project ID
 }
 
-# This data block fetches the project number, which is needed for service agent emails.
+# This data block fetches the project number.
 data "google_project" "project" {}
 
 # --- Provider Configuration ---
@@ -16,7 +16,7 @@ provider "google" {
 
 # --- Core Infrastructure ---
 
-# A Cloud Storage bucket to receive the raw data files.
+# A Cloud Storage bucket to receive the data files.
 resource "google_storage_bucket" "data_bucket" {
   name                        = "data-pipeline-bucket-${var.project_id}"
   location                    = "US-CENTRAL1"
@@ -46,7 +46,7 @@ resource "google_bigquery_table" "user_data_table" {
 
 # --- Service Account for the Cloud Function ---
 
-# A dedicated Service Account for the Cloud Function to give it a unique identity.
+# A dedicated Service Account for the Cloud Function.
 resource "google_service_account" "function_sa" {
   account_id   = "data-pipeline-function-sa"
   display_name = "Data Pipeline Cloud Function SA"
@@ -97,7 +97,6 @@ resource "google_storage_bucket_iam_member" "eventarc_trigger_permission" {
 }
 
 # Allows the function's service account to invoke its own underlying Cloud Run service.
-# This is required because the event trigger is configured to use the function's identity.
 resource "google_cloud_run_service_iam_member" "eventarc_invoker" {
   location = google_cloudfunctions2_function.data_loader.location
   project  = google_cloudfunctions2_function.data_loader.project

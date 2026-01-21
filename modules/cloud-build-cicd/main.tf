@@ -50,8 +50,6 @@ resource "google_cloudbuild_trigger" "github_trigger" {
   location        = var.location
   service_account = google_service_account.trigger_sa.id
 
-  # --- THIS IS THE BLOCK THAT WAS ACCIDENTALLY DELETED ---
-  # It tells the trigger to run on a push to a specific branch.
   repository_event_config {
     repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_owner}-${var.github_repo_name}"
     push {
@@ -62,7 +60,6 @@ resource "google_cloudbuild_trigger" "github_trigger" {
 
   # This tells Cloud Build what to do when triggered
   build {
-    # This is the logging fix you added previously
     options {
       logging = "CLOUD_LOGGING_ONLY"
     }
