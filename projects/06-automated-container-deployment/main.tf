@@ -31,8 +31,8 @@ module "cicd_pipeline" {
   location               = "us-central1"
   repo_id                = "my-app-repo"
   app_name               = "my-app"
-  github_owner           = "sammypk23"                    
-  github_repo_name       = "gcp-cloud-engineer-portfolio" 
+  github_owner           = "samperkins-cloud"                    
+  github_repo_name       = "gcp-professional-portfolio" 
   branch_name            = "^main$"
   cloud_run_service_name = module.app_service.service_name 
   app_source_path        = "./projects/06-automated-container-deployment/apps"
