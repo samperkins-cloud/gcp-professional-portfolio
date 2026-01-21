@@ -43,6 +43,9 @@ resource "google_cloudbuild_trigger" "github_trigger" {
   name     = "deploy-${var.app_name}-on-push-to-main"
   location = "global"
 
+  # THIS IS THE CORRECT LOCATION FOR THE SERVICE ACCOUNT
+  service_account = google_service_account.trigger_sa.id
+
   # This block is for modern, 2nd Gen connections
   repository_event_config {
     repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_owner}-${var.github_repo_name}"
@@ -53,8 +56,7 @@ resource "google_cloudbuild_trigger" "github_trigger" {
 
   # This tells Cloud Build what to do when triggered
   build {
-    # THIS IS THE CRITICAL LINE WE WERE MISSING
-    service_account = google_service_account.trigger_sa.id
+    # The "service_account" line has been moved from here.
 
     step {
       name = "gcr.io/cloud-builders/docker"
