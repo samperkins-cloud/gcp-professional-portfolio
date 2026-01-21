@@ -38,15 +38,27 @@ resource "google_artifact_registry_repository" "docker_repo" {
 
 # 4. CREATE THE CLOUD BUILD TRIGGER
 resource "google_cloudbuild_trigger" "github_trigger" {
-  # ... other arguments like project, name, location, service_account ...
+  project         = var.project_id
+  name            = "deploy-${var.app_name}-on-push-to-main"
+  location        = var.location
+  service_account = google_service_account.trigger_sa.id
+
+  # --- THIS IS THE BLOCK THAT WAS ACCIDENTALLY DELETED ---
+  # It tells the trigger to run on a push to a specific branch.
+  repository_event_config {
+    repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_owner}-${var.github_repo_name}"
+    push {
+      branch = var.branch_name
+    }
+  }
+  # ---------------------------------------------------------
 
   # This tells Cloud Build what to do when triggered
   build {
-    # --- ADD THIS BLOCK TO FIX THE LOGGING ERROR ---
+    # This is the logging fix you added previously
     options {
       logging = "CLOUD_LOGGING_ONLY"
     }
-    # -------------------------------------------------
 
     step {
       name = "gcr.io/cloud-builders/docker"
@@ -62,7 +74,7 @@ resource "google_cloudbuild_trigger" "github_trigger" {
       args       = ["run", "deploy", var.cloud_run_service_name, "--image", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:latest", "--region", var.location]
     }
   }
-  # This ensures the trigger is not created until the SA has its permissions, preventing race conditions.
+
   depends_on = [
     google_project_iam_member.registry_writer,
     google_project_iam_member.run_developer,
