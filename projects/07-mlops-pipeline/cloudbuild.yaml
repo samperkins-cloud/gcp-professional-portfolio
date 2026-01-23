@@ -1,0 +1,16 @@
+steps:
+    # 1. Build the Docker image for the training component
+    - name: 'gcr.io/cloud-builders/docker'
+      args: [
+        'build',
+        '-t',
+        'us-central1-docker.pkg.dev/${PROJECT_ID}/intelligent-api-components-repo/train-component:latest',
+        './components/train'
+      ]
+
+    # 2. Push the Docker image to Artifact Registry
+    - name: 'gcr.io/cloud-builders/docker'
+      args: [
+        'push',
+        'us-central1-docker.pkg.dev/${PROJECT_ID}/intelligent-api-components-repo/train-component:latest'
+      ]
