@@ -1,3 +1,5 @@
+# modules/cloud-build-cicd/main.tf
+
 # 1. CREATE THE DEDICATED SERVICE ACCOUNT
 # This creates a unique, least-privilege SA for our trigger.
 resource "google_service_account" "trigger_sa" {
@@ -36,11 +38,18 @@ resource "google_project_iam_member" "log_writer" {
 }
 
 # 3. CREATE THE ARTIFACT REGISTRY REPOSITORY
+# The repository ID is now derived from the app_name for consistency.
 resource "google_artifact_registry_repository" "docker_repo" {
   project       = var.project_id
   location      = var.location
-  repository_id = var.repo_id
+  repository_id = "${var.app_name}-repo"
+  description   = "Docker repository for the ${var.app_name} application"
   format        = "DOCKER"
+
+  # ADD THIS BLOCK to enforce immutable tags
+  docker_config {
+    immutable_tags = true
+  }
 }
 
 # 4. CREATE THE CLOUD BUILD TRIGGER
@@ -51,7 +60,7 @@ resource "google_cloudbuild_trigger" "github_trigger" {
   service_account = google_service_account.trigger_sa.id
 
   repository_event_config {
-    repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_owner}-${var.github_repo_name}"
+    repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_repo_name}"
     push {
       branch = var.branch_name
     }
