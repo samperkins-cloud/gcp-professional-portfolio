@@ -31,7 +31,7 @@ def train_model():
 )
 def pipeline():
     """Defines the structure of the pipeline."""
-    train_model_task = train_model()
+    train_model_task = train_model().set_cpu_limit('1').set_memory_limit('4G')
 
 
 if __name__ == "__main__":
