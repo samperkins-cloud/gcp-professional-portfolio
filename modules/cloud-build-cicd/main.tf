@@ -52,7 +52,6 @@ resource "google_cloudbuild_trigger" "github_trigger" {
   service_account = google_service_account.trigger_sa.id
 
   repository_event_config {
-    # CORRECTED: Uses github_owner variable for the repository name
     repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_owner}-${var.github_repo_name}"
     push {
       branch = var.branch_name
@@ -64,7 +63,6 @@ resource "google_cloudbuild_trigger" "github_trigger" {
       logging = "CLOUD_LOGGING_ONLY"
     }
 
-    # CORRECTED: Uses $SHORT_SHA for unique image tags
     step {
       name = "gcr.io/cloud-builders/docker"
       args = ["build", "-t", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:$SHORT_SHA", var.app_source_path]
@@ -92,11 +90,11 @@ resource "google_cloudbuild_trigger" "github_trigger" {
 resource "google_cloudbuild_trigger" "github_trigger_pr" {
   project         = var.project_id
   name            = "deploy-${var.app_name}-preview-on-pr"
+  description     = "Deploys a preview environment for pull requests."
   location        = var.location
   service_account = google_service_account.trigger_sa.id
 
   repository_event_config {
-    # CORRECTED: Uses github_owner variable for the repository name
     repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_owner}-${var.github_repo_name}"
     pull_request {
       branch          = "^main$"
@@ -109,22 +107,20 @@ resource "google_cloudbuild_trigger" "github_trigger_pr" {
       logging = "CLOUD_LOGGING_ONLY"
     }
 
-    # CORRECTED: Uses $${_PR_NUMBER} for unique PR tags
     step {
       name = "gcr.io/cloud-builders/docker"
-      args = ["build", "-t", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}", var.app_source_path]
+      args = ["build", "-t", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}-$SHORT_SHA", var.app_source_path]
     }
     step {
       name = "gcr.io/cloud-builders/docker"
-      args = ["push", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}"]
+      args = ["push", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}-$SHORT_SHA"]
     }
-    # CORRECTED: Deploys a unique service and allows public access
     step {
       name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
       entrypoint = "gcloud"
       args = [
         "run", "deploy", "${var.app_name}-pr-$${_PR_NUMBER}",
-        "--image", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}",
+        "--image", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}-$SHORT_SHA",
         "--region", var.location,
         "--allow-unauthenticated"
       ]
