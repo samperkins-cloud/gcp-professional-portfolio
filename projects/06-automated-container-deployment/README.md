@@ -22,9 +22,7 @@ The Cloud Build history shows a complete, successful pipeline run. Each stage—
 
 The system also automatically creates temporary preview environments for each Pull Request. The screenshot below shows a successful PR check on GitHub, and the corresponding ephemeral service created in Cloud Run, allowing for isolated testing and review before merging.
 
-*(Suggestion: Add a new screenshot here showing a successful PR check and the temporary Cloud Run service with "Public access")*
-
----
+![Successful Cloud Build Pipeline](docs/06-cloud-run-public-access.png)
 
 ## Architecture & Design Choices
 
