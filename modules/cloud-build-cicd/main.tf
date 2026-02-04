@@ -32,6 +32,13 @@ resource "google_project_iam_member" "log_writer" {
   member  = google_service_account.trigger_sa.member
 }
 
+# Allows the SA to set IAM policies (like public access) on Cloud Run services.
+resource "google_project_iam_member" "run_admin" {
+  project = var.project_id
+  role    = "roles/run.admin"
+  member  = google_service_account.trigger_sa.member
+}
+
 # 3. CREATE THE ARTIFACT REGISTRY REPOSITORY
 resource "google_artifact_registry_repository" "docker_repo" {
   project       = var.project_id
@@ -82,7 +89,8 @@ resource "google_cloudbuild_trigger" "github_trigger" {
     google_project_iam_member.registry_writer,
     google_project_iam_member.run_developer,
     google_project_iam_member.sa_user,
-    google_project_iam_member.log_writer
+    google_project_iam_member.log_writer,
+    google_project_iam_member.run_admin
   ]
 }
 
@@ -131,6 +139,7 @@ resource "google_cloudbuild_trigger" "github_trigger_pr" {
     google_project_iam_member.registry_writer,
     google_project_iam_member.run_developer,
     google_project_iam_member.sa_user,
-    google_project_iam_member.log_writer
+    google_project_iam_member.log_writer,
+    google_project_iam_member.run_admin
   ]
 }
