@@ -33,7 +33,6 @@ module "cicd_pipeline" {
   cloud_run_service_name = module.app_service.service_name
   app_source_path        = var.app_source_path
   connection_region      = var.location
-
-  # This module will also wait until the project_apis module is finished.
-  depends_on = [module.project_apis]
+  connection_name        = var.connection_name
+  depends_on             = [module.project_apis]
 }

@@ -39,3 +39,7 @@ variable "app_source_path" {
   description = "The path to the application source code within the repository."
   type        = string
 }
+variable "connection_name" {
+  description = "The name of the Cloud Build connection to GitHub."
+  type        = string
+}
