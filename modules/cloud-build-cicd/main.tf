@@ -60,7 +60,7 @@ resource "google_cloudbuild_trigger" "github_trigger" {
   service_account = google_service_account.trigger_sa.id
 
   repository_event_config {
-    repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_repo_name}"
+    repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_owner}-${var.github_repo_name}"
     push {
       branch = var.branch_name
     }
@@ -85,6 +85,58 @@ resource "google_cloudbuild_trigger" "github_trigger" {
       name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
       entrypoint = "gcloud"
       args       = ["run", "deploy", var.cloud_run_service_name, "--image", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:latest", "--region", var.location]
+    }
+  }
+
+  depends_on = [
+    google_project_iam_member.registry_writer,
+    google_project_iam_member.run_developer,
+    google_project_iam_member.sa_user,
+    google_project_iam_member.log_writer
+  ]
+}
+
+resource "google_cloudbuild_trigger" "github_trigger_pr" {
+  project         = var.project_id
+  name            = "deploy-${var.app_name}-preview-on-pr"
+  location        = var.location
+  service_account = google_service_account.trigger_sa.id
+
+  repository_event_config {
+    repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_owner}-${var.github_repo_name}"
+    pull_request {
+      branch          = "^main$"
+      comment_control = "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"
+    }
+  }
+
+  build {
+    options {
+      logging = "CLOUD_LOGGING_ONLY"
+    }
+
+    # Step 1: Build the container with a unique PR-based tag
+    step {
+      name = "gcr.io/cloud-builders/docker"
+      args = ["build", "-t", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}", var.app_source_path]
+    }
+
+    # Step 2: Push the uniquely tagged container
+    step {
+      name = "gcr.io/cloud-builders/docker"
+      args = ["push", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}"]
+    }
+
+    # Step 3: Deploy to Cloud Run with a unique service name
+    step {
+      name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
+      entrypoint = "gcloud"
+      args = [
+        "run", "deploy", "${var.app_name}-pr-$${_PR_NUMBER}", # Creates a unique service like "my-cicd-app-pr-123"
+        "--image", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}", # Deploys the correct image
+        "--region", var.location,
+        "--allow-unauthenticated" # Allows anyone with the URL to view the preview
+      ]
     }
   }
 
