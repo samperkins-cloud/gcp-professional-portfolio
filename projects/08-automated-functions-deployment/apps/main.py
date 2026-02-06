@@ -1,4 +1,4 @@
-# Initial deployment of the ETL function via CI/CD. v4
+# Initial deployment of the ETL function via CI/CD. v5
 import functions_framework
 from flask import escape
 
