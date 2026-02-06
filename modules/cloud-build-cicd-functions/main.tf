@@ -64,6 +64,9 @@ resource "google_cloudbuild_trigger" "github_trigger" {
   name            = "deploy-${var.app_name}-on-push-to-main"
   location        = var.location
   service_account = google_service_account.trigger_sa.id
+  included_files = [
+    "projects/08-automated-functions-deployment/apps/**"
+  ]
 
   repository_event_config {
     repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_owner}-${var.github_repo_name}"
@@ -109,6 +112,9 @@ resource "google_cloudbuild_trigger" "github_trigger_pr" {
   description     = "Deploys a preview environment for pull requests."
   location        = var.location
   service_account = google_service_account.trigger_sa.id
+  included_files = [
+    "projects/08-automated-functions-deployment/apps/**"
+  ]
 
   repository_event_config {
     repository = "projects/${var.project_id}/locations/${var.connection_region}/connections/${var.connection_name}/repositories/${var.github_owner}-${var.github_repo_name}"
