@@ -1,6 +1,6 @@
 # Initial deployment of the ETL function via CI/CD. v7-FINAL
 import functions_framework
- from markupsafe import escape
+from markupsafe import escape
 
 # Register an HTTP function that can be triggered by a URL
 @functions_framework.http
