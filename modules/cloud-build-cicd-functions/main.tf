@@ -70,21 +70,18 @@ resource "google_cloudbuild_trigger" "github_trigger" {
       logging = "CLOUD_LOGGING_ONLY"
     }
 
-    # Step 1 & 2: Build and Push the container
-    step {
-      name = "gcr.io/cloud-builders/docker"
-      args = ["build", "-t", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:$SHORT_SHA", var.app_source_path]
-    }
-    step {
-      name = "gcr.io/cloud-builders/docker"
-      args = ["push", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:$SHORT_SHA"]
-    }
-
-    # Step 3: Deploy to Cloud Functions
+    # A SINGLE, POWERFUL STEP
     step {
       name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
       entrypoint = "gcloud"
-      args       = ["run", "deploy", var.app_name, "--image", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:$SHORT_SHA", "--region", var.location, "--allow-unauthenticated"]
+      args = [
+        "functions", "deploy", var.app_name,
+        "--gen2",
+        "--region", var.location,
+        "--source", var.app_source_path, # Tells gcloud where the Dockerfile is
+        "--trigger-http",
+        "--allow-unauthenticated"
+      ]
     }
   }
 
@@ -118,24 +115,16 @@ resource "google_cloudbuild_trigger" "github_trigger_pr" {
       logging = "CLOUD_LOGGING_ONLY"
     }
 
-    # Step 1 & 2 are correct: Build and Push a unique container
-    step {
-      name = "gcr.io/cloud-builders/docker"
-      args = ["build", "-t", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}-$SHORT_SHA", var.app_source_path]
-    }
-    step {
-      name = "gcr.io/cloud-builders/docker"
-      args = ["push", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}-$SHORT_SHA"]
-    }
-    
-    # Step 3 is THE CHANGE: Deploy a unique preview function
+    # A SINGLE, POWERFUL STEP
     step {
       name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
       entrypoint = "gcloud"
       args = [
-        "run", "deploy", "${var.app_name}-pr-$${_PR_NUMBER}",
-        "--image", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}-$SHORT_SHA",
+        "functions", "deploy", "${var.app_name}-pr-$${_PR_NUMBER}",
+        "--gen2",
         "--region", var.location,
+        "--source", var.app_source_path, # Tells gcloud where the Dockerfile is
+        "--trigger-http",
         "--allow-unauthenticated"
       ]
     }
