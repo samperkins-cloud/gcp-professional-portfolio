@@ -79,19 +79,18 @@ resource "google_cloudbuild_trigger" "github_trigger" {
     options {
       logging = "CLOUD_LOGGING_ONLY"
     }
-
+    step {
+      name = "gcr.io/cloud-builders/docker"
+      args = ["build", "-t", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:$SHORT_SHA", var.app_source_path]
+    }
+    step {
+      name = "gcr.io/cloud-builders/docker"
+      args = ["push", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:$SHORT_SHA"]
+    }
     step {
       name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
       entrypoint = "gcloud"
-      args = [
-        "functions", "deploy", var.app_name,
-        "--gen2",
-        "--region", var.location,
-        "--runtime", "python311",
-        "--source", var.app_source_path,
-        "--trigger-http",
-        "--allow-unauthenticated"
-      ]
+      args       = ["run", "deploy", var.app_name, "--image", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:$SHORT_SHA", "--region", var.location, "--allow-unauthenticated"]
     }
   }
 
@@ -128,17 +127,21 @@ resource "google_cloudbuild_trigger" "github_trigger_pr" {
     options {
       logging = "CLOUD_LOGGING_ONLY"
     }
-
+    step {
+      name = "gcr.io/cloud-builders/docker"
+      args = ["build", "-t", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}-$SHORT_SHA", var.app_source_path]
+    }
+    step {
+      name = "gcr.io/cloud-builders/docker"
+      args = ["push", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}-$SHORT_SHA"]
+    }
     step {
       name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
       entrypoint = "gcloud"
       args = [
-        "functions", "deploy", "${var.app_name}-pr-$${_PR_NUMBER}",
-        "--gen2",
+        "run", "deploy", "${var.app_name}-pr-$${_PR_NUMBER}",
+        "--image", "${var.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker_repo.repository_id}/${var.app_name}:pr-$${_PR_NUMBER}-$SHORT_SHA",
         "--region", var.location,
-        "--runtime", "python311",
-        "--source", var.app_source_path,
-        "--trigger-http",
         "--allow-unauthenticated"
       ]
     }
