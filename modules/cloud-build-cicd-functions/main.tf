@@ -77,7 +77,6 @@ resource "google_cloudbuild_trigger" "github_trigger" {
       logging = "CLOUD_LOGGING_ONLY"
     }
 
-    # A SINGLE, POWERFUL STEP
     step {
       name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
       entrypoint = "gcloud"
@@ -85,7 +84,8 @@ resource "google_cloudbuild_trigger" "github_trigger" {
         "functions", "deploy", var.app_name,
         "--gen2",
         "--region", var.location,
-        "--source", var.app_source_path, # Tells gcloud where the Dockerfile is
+        "--runtime", "python311",
+        "--source", var.app_source_path,
         "--trigger-http",
         "--allow-unauthenticated"
       ]
@@ -94,7 +94,7 @@ resource "google_cloudbuild_trigger" "github_trigger" {
 
   depends_on = [
     google_project_iam_member.run_admin,
-    google_project_iam_member.functions_developer, # ADD THIS LINE
+    google_project_iam_member.functions_developer, 
     google_project_iam_member.registry_writer,
     google_project_iam_member.run_developer,
     google_project_iam_member.sa_user,
@@ -123,7 +123,6 @@ resource "google_cloudbuild_trigger" "github_trigger_pr" {
       logging = "CLOUD_LOGGING_ONLY"
     }
 
-    # A SINGLE, POWERFUL STEP
     step {
       name       = "gcr.io/google.com/cloudsdktool/cloud-sdk"
       entrypoint = "gcloud"
@@ -131,7 +130,8 @@ resource "google_cloudbuild_trigger" "github_trigger_pr" {
         "functions", "deploy", "${var.app_name}-pr-$${_PR_NUMBER}",
         "--gen2",
         "--region", var.location,
-        "--source", var.app_source_path, # Tells gcloud where the Dockerfile is
+        "--runtime", "python311",
+        "--source", var.app_source_path,
         "--trigger-http",
         "--allow-unauthenticated"
       ]
