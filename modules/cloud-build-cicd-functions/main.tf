@@ -39,6 +39,13 @@ resource "google_project_iam_member" "run_admin" {
   member  = google_service_account.trigger_sa.member
 }
 
+# Allows the SA to manage Cloud Functions (get, create, update, etc.)
+    resource "google_project_iam_member" "functions_developer" {
+      project = var.project_id
+      role    = "roles/cloudfunctions.developer"
+      member  = google_service_account.trigger_sa.member
+    }
+
 # 3. CREATE THE ARTIFACT REGISTRY REPOSITORY
 resource "google_artifact_registry_repository" "docker_repo" {
   project       = var.project_id
@@ -86,7 +93,8 @@ resource "google_cloudbuild_trigger" "github_trigger" {
   }
 
   depends_on = [
-    google_project_iam_member.run_admin, # Ensure all permissions are set first
+    google_project_iam_member.run_admin,
+    google_project_iam_member.functions_developer, # ADD THIS LINE
     google_project_iam_member.registry_writer,
     google_project_iam_member.run_developer,
     google_project_iam_member.sa_user,
@@ -132,6 +140,7 @@ resource "google_cloudbuild_trigger" "github_trigger_pr" {
 
   depends_on = [
     google_project_iam_member.run_admin,
+    google_project_iam_member.functions_developer, # ADD THIS LINE
     google_project_iam_member.registry_writer,
     google_project_iam_member.run_developer,
     google_project_iam_member.sa_user,
