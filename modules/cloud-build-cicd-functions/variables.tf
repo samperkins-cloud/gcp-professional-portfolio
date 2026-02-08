@@ -45,3 +45,8 @@ variable "connection_region" {
   description = "The region where the Cloud Build GitHub host connection was created."
   type        = string
 }
+
+ variable "secret_id" {
+  description = "The full ID of the Secret Manager secret to inject."
+  type        = string
+}

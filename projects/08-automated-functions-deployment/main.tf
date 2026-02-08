@@ -21,4 +21,5 @@ module "cicd_pipeline" {
   connection_name   = var.connection_name
   connection_region = var.location
   depends_on        = [module.project_apis]
+  secret_id = google_secret_manager_secret.app_secret.id
 }
