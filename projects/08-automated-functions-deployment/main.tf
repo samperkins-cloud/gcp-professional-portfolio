@@ -1,3 +1,15 @@
+# projects/08-automated-functions-deployment/main.tf
+
+terraform {
+  cloud {
+    organization = "samperkins-cloud-org" 
+
+    workspaces {
+      name = "project-08-functions-deployment"
+    }
+  }
+}
+
 provider "google" {
   project = var.project_id
 }
