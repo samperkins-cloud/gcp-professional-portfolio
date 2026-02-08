@@ -53,6 +53,13 @@ resource "google_service_account_iam_member" "self_user" {
   member             = google_service_account.trigger_sa.member
 }
 
+# Allows this Service Account to be used as the identity for Cloud Run services
+resource "google_service_account_iam_member" "self_user" {
+  service_account_id = google_service_account.trigger_sa.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = google_service_account.trigger_sa.member
+}
+
 # 3. CREATE THE ARTIFACT REGISTRY REPOSITORY
 resource "google_artifact_registry_repository" "docker_repo" {
   project       = var.project_id
