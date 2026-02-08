@@ -46,3 +46,9 @@ variable "branch_name" {
   type        = string
   default     = "^main$"
 }
+
+variable "app_api_key" {
+  description = "The secret API key for the application."
+  type        = string
+  sensitive   = true
+}

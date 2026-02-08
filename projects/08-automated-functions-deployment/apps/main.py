@@ -1,19 +1,15 @@
-# Initial deployment of the ETL function via CI/CD. v7-FINAL
+import os
 import functions_framework
 from markupsafe import escape
 
-# Register an HTTP function that can be triggered by a URL
+# Read the secret API key from the environment variable.
+# The value is securely injected by the CI/CD pipeline.
+# The default "NO_KEY_FOUND" is for local testing or if the secret isn't set.
+API_KEY = os.environ.get("API_KEY", "NO_KEY_FOUND")
+
 @functions_framework.http
 def hello_etl(request):
-    """
-    HTTP Cloud Function.
-    Args:
-        request (flask.Request): The request object.
-    Returns:
-        The response text, or any set of values that can be turned into a
-        Response object using `make_response`.
-    """
-    # Try to get a 'name' from the request's JSON body or query string
+    """HTTP Cloud Function that securely uses a secret."""
     request_json = request.get_json(silent=True)
     request_args = request.args
 
@@ -24,4 +20,6 @@ def hello_etl(request):
     else:
         name = 'World'
     
-    return f"Hello, {escape(name)}! This is an ETL function deployed by CI/CD."
+    # For this demo, we'll just display the first 5 characters of the secret
+    # to prove it was injected correctly, without exposing the whole key.
+    return f"Hello, {escape(name)}! The first 5 chars of the API key are: {API_KEY[:5]}"
