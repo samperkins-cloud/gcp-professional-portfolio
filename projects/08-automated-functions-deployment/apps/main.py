@@ -24,4 +24,4 @@ def hello_etl(request):
     else:
         name = 'World'
     
-    return f"Hello, {escape(name)}! This is an ETL function deployed by CI/CD."
+    return f"Hello, {escape(name)}! This is a PR test"
