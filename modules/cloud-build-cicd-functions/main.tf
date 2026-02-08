@@ -96,6 +96,7 @@ resource "google_cloudbuild_trigger" "github_trigger" {
         "--region", var.location,
         "--allow-unauthenticated",
         "--set-secrets=API_KEY=${var.secret_id}:latest"
+        "--service-account=${google_service_account.trigger_sa.email}"
       ]
     }
   }
@@ -150,6 +151,7 @@ resource "google_cloudbuild_trigger" "github_trigger_pr" {
         "--region", var.location,
         "--allow-unauthenticated",
         "--set-secrets=API_KEY=${var.secret_id}:latest"
+        "--service-account=${google_service_account.trigger_sa.email}"
       ]
     }
   }
