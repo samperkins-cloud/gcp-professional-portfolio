@@ -46,6 +46,13 @@ resource "google_project_iam_member" "functions_developer" {
   member  = google_service_account.trigger_sa.member
 }
 
+# Allows this Service Account to be used as the identity for Cloud Run services
+resource "google_service_account_iam_member" "self_user" {
+  service_account_id = google_service_account.trigger_sa.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = google_service_account.trigger_sa.member
+}
+
 # 3. CREATE THE ARTIFACT REGISTRY REPOSITORY
 resource "google_artifact_registry_repository" "docker_repo" {
   project       = var.project_id
@@ -107,7 +114,8 @@ resource "google_cloudbuild_trigger" "github_trigger" {
     google_project_iam_member.registry_writer,
     google_project_iam_member.run_developer,
     google_project_iam_member.sa_user,
-    google_project_iam_member.log_writer
+    google_project_iam_member.log_writer,
+    google_service_account_iam_member.self_user
   ]
 }
 
@@ -162,6 +170,7 @@ resource "google_cloudbuild_trigger" "github_trigger_pr" {
     google_project_iam_member.registry_writer,
     google_project_iam_member.run_developer,
     google_project_iam_member.sa_user,
-    google_project_iam_member.log_writer
+    google_project_iam_member.log_writer,
+    google_service_account_iam_member.self_user
   ]
 }
