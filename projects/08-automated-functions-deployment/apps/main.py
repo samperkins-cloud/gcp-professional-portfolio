@@ -20,6 +20,4 @@ def hello_etl(request):
     else:
         name = 'World'
     
-    # For this demo, we'll just display the first 5 characters of the secret
-    # to prove it was injected correctly, without exposing the whole key.
-    return f"Hello, {escape(name)}! The first 5 chars of the API key are: {API_KEY[:5]}"
+    return f"Hello, {escape(name)}! This is an ETL function deployed by CI/CD."
