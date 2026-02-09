@@ -2,7 +2,7 @@
 
 terraform {
   cloud {
-    organization = "samperkins-cloud-org" 
+    organization = "samperkins-cloud-org"
 
     workspaces {
       name = "project-08-functions-deployment"
@@ -33,5 +33,5 @@ module "cicd_pipeline" {
   connection_name   = var.connection_name
   connection_region = var.location
   depends_on        = [module.project_apis]
-  secret_id = google_secret_manager_secret.app_secret.secret_id
+  secret_id         = data.terraform_remote_state.platform.outputs.app_secret_id
 }
