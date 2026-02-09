@@ -4,7 +4,7 @@ resource "google_secret_manager_secret" "app_secret" {
   secret_id = "${var.app_name}-api-key"
 
   replication {
-    auto {} # This is the correct syntax for automatic replication
+    auto {}
   }
 }
 

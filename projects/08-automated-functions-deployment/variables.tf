@@ -39,8 +39,6 @@ variable "connection_name" {
   type        = string
 }
 
-# This variable is used by the module but we don't need to set it for this project.
-# We still need to declare it so we can pass a value (even null).
 variable "branch_name" {
   description = "The name of the main branch for the production trigger."
   type        = string
