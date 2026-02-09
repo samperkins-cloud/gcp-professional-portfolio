@@ -4,28 +4,30 @@ This repository is a curated collection of enterprise-grade cloud infrastructure
 
 ---
 
-## Project Showcase
+## 🚀 Project Showcase
 
 This portfolio follows a "crawl, walk, run" methodology, with each project building upon the skills of the last.
 
-*   **Project 01:** `hello-cloud-vm` | Deploys a basic web server on a single Compute Engine virtual machine. | `Compute Engine`, `Startup Scripts`
-*   **Project 02:** `secure-custom-vpc` | Establishes a secure, reusable Virtual Private Cloud (VPC) network as a foundational Terraform module. | `VPC`, `Firewall Rules`, `Terraform Modules`
-*   **Project 03:** `web-server-in-vpc` | Deploys a web server securely inside the custom VPC module, demonstrating module composition. | `Compute Engine`, `VPC`, `Module Reusability`
-*   **Project 04:** `automated-data-pipeline` | Creates an automated, event-driven data processing pipeline using serverless components. | `Cloud Functions`, `Cloud Storage`, `Pub/Sub`
-*   **Project 05:** `scalable-web-app` | Builds a highly available, auto-scaling, and load-balanced web application using an Instance Group. | `Instance Groups`, `Load Balancing`, `Health Checks`
-*   **Project 06:** `automated-container-deployment` | Implements a full CI/CD pipeline to automatically build and deploy a containerized application to a serverless environment on every `git push`. | `Cloud Run`, `Cloud Build`, `Artifact Registry`, `Docker`, `GitOps`
-*   **Project 07:** `mlops-pipeline` | **(Conceptual)** Orchestrates a machine learning pipeline using Vertex AI to automate model training, evaluation, and deployment, triggered by changes in the source repository. | `Vertex AI Pipelines`, `Cloud Build`, `Cloud Storage`
-*   **Project 08:** `automated-functions-deployment` | Adapts the CI/CD architecture to deploy containerized ETL functions, implementing secure secret management and advanced monorepo trigger filtering. | `Cloud Functions (2nd Gen)`, `Cloud Run`, `Secret Manager`, `Advanced IAM`
+| Project | Description | Key Technologies |
+| :--- | :--- | :--- |
+| **01: `hello-cloud-vm`** | Deploys a basic web server on a single Compute Engine VM. | `Compute Engine`, `Startup Scripts` |
+| **02: `secure-custom-vpc`** | Establishes a secure, reusable VPC network as a foundational Terraform module. | `VPC`, `Firewall Rules`, `Terraform Modules` |
+| **03: `web-server-in-vpc`** | Deploys a web server securely inside the custom VPC module, demonstrating module composition. | `Compute Engine`, `VPC`, `Module Reusability` |
+| **04: `automated-data-pipeline`** | Creates an automated, event-driven data processing pipeline using serverless components. | `Cloud Functions`, `Cloud Storage`, `Pub/Sub` |
+| **05: `scalable-web-app`** | Builds a highly available, auto-scaling, and load-balanced web application. | `Instance Groups`, `Load Balancing`, `Health Checks` |
+| **06: `automated-container-deployment`** | Implements a full CI/CD pipeline to automatically deploy a containerized web app. | `Cloud Run`, `Cloud Build`, `Artifact Registry`, `Docker` |
+| **07: `mlops-pipeline`** | **(Conceptual)** Orchestrates a Vertex AI pipeline to automate ML model training and deployment. | `Vertex AI`, `Cloud Build`, `Cloud Storage` |
+| **08: `automated-functions-deployment`** | Adapts the CI/CD architecture to deploy containerized ETL functions with secure secret management. | `Cloud Functions (2nd Gen)`, `Secret Manager`, `Advanced IAM` |
 
 ---
 
-## Core Methodologies & Skills Demonstrated
+## 🛠️ Core Methodologies & Skills Demonstrated
 
 This portfolio demonstrates hands-on experience with modern cloud engineering practices:
 
-*   **Infrastructure as Code (IaC):** Proficient use of **`Terraform`** to define, provision, and manage all cloud resources in a repeatable and version-controlled manner. This includes authoring **reusable modules** and managing **remote state** with Terraform Cloud.
+*   **Infrastructure as Code (IaC):** Proficient use of **`Terraform`** to define, provision, and manage all cloud resources in a repeatable and version-controlled manner. This includes authoring **reusable modules** and managing **remote state** with Terraform Cloud for collaborative, enterprise-grade workflows.
 
-*   **CI/CD & Automation:** Deep implementation of a fully automated GitOps workflow. Code pushed to GitHub automatically triggers **`Cloud Build`** pipelines, containerizes applications with **`Docker`**, and deploys them on a fully managed, serverless platform (**`Cloud Run`**) for zero-ops scaling. This includes **ephemeral preview environments** for Pull Requests and **monorepo path filtering** to optimize trigger execution.
+*   **CI/CD & Automation:** Deep implementation of a fully automated GitOps workflow. Code pushed to GitHub automatically triggers **`Cloud Build`** pipelines, containerizes applications with **`Docker`**, and deploys them on a fully managed, serverless platform (**`Cloud Run`**). This includes building **ephemeral preview environments** for Pull Requests and implementing **monorepo path filtering** to optimize pipeline execution.
 
 *   **Secure DevOps (DevSecOps):** Foundational knowledge of cloud networking, including the design and implementation of custom **`VPCs`** and granular **`Firewall Rules`**. Deep, practical experience implementing the **Principle of Least Privilege** for service accounts and securely managing application secrets with **`Secret Manager`** and IAM bindings.
 
@@ -36,7 +38,7 @@ This portfolio demonstrates hands-on experience with modern cloud engineering pr
 
 ---
 
-## Repository Structure
+## 📂 Repository Structure
 
 This repository is organized to reflect a professional, multi-project environment.
 
@@ -45,6 +47,6 @@ This repository is organized to reflect a professional, multi-project environmen
 
 ---
 
-## My Learning Journey
+## 👨‍💻 My Learning Journey
 
 This portfolio documents my professional development from the foundational knowledge of a Google Associate Cloud Engineer towards the advanced, practical skills required for a senior Cloud or DevOps Engineering role. It is built on the principle that robust, scalable, and automated infrastructure is the bedrock of any successful system.
