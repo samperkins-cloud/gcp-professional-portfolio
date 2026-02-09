@@ -12,7 +12,7 @@ This showcases a key enterprise capability: creating a flexible, secure, and aut
 
 The following screenshot shows the live Cloud Function (deployed as a Cloud Run service) displaying a message that includes a portion of a secret value, proving the entire secure workflow was successful.
 
-*(Suggestion: Add a new screenshot here showing the final, working URL output with the "The first 5 chars of the API key are: THIS_" message.)*
+![ETL Function URL](https://raw.githubusercontent.com/samperkins-cloud/gcp-professional-portfolio/main/projects/08-automated-functions-deployment/docs/01-etl-function-url.png)
 
 The Cloud Build history shows a successful, targeted pipeline run. Note that only the trigger for Project 08 ran, not the trigger for Project 06, thanks to path-based filtering.
 
