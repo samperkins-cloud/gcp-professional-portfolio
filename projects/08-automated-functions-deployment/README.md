@@ -20,7 +20,7 @@ The Cloud Build history shows a successful, targeted pipeline run. Note that onl
 
 The Cloud Run console shows the deployed `my-etl-function` service, configured with the correct custom service account and public access for its trigger URL.
 
-*(Suggestion: Add a new screenshot here of the Cloud Run console showing the final `my-etl-function` service.)*
+*(Suggestion: Add a new screenshot here of the Cloud Run console showin the final `my-etl-function` service.)*
 
 ---
 
