@@ -12,15 +12,15 @@ This showcases a key enterprise capability: creating a flexible, secure, and aut
 
 The following screenshot shows the live Cloud Function (deployed as a Cloud Run service) displaying a message that includes a portion of a secret value, proving the entire secure workflow was successful.
 
-![ETL Function URL](https://raw.githubusercontent.com/samperkins-cloud/gcp-professional-portfolio/main/projects/08-automated-functions-deployment/docs/01-etl-function-url.png)
+![ETL Function URL](docs/01-etl-function-url.png)
 
 The Cloud Build history shows a successful, targeted pipeline run. Note that only the trigger for Project 08 ran, not the trigger for Project 06, thanks to path-based filtering.
 
-*(Suggestion: Add a new screenshot here of your Cloud Build history showing a single, successful build for `deploy-my-etl-function-on-push-to-main`.)*
+![Successful Cloud Build](docs/02-etl-cloud-build-main.png)
 
 The Cloud Run console shows the deployed `my-etl-function` service, configured with the correct custom service account and public access for its trigger URL.
 
-*(Suggestion: Add a new screenshot here of the Cloud Run console showing the final `my-etl-function` service.)*
+![My ETL Function in Cloud Run](docs/03-my-etl-function-service.png)
 
 ---
 
