@@ -1,3 +1,4 @@
+ # Final verification of the simplified deployment.
 import os
 import functions_framework
 from markupsafe import escape

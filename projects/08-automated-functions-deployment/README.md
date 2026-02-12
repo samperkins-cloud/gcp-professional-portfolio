@@ -10,17 +10,19 @@ This showcases a key enterprise capability: creating a flexible, secure, and aut
 
 ## Proof of Success
 
-The following screenshot shows the live Cloud Function (deployed as a Cloud Run service) displaying a message that includes a portion of a secret value, proving the entire secure workflow was successful.
+The live Cloud Function, deployed as a Cloud Run service, successfully retrieves and displays a portion of a value from Secret Manager. This demonstrates the end-to-end success of the secure workflow, including the service account permissions and secret retrieval.
 
-![ETL Function URL](docs/01-etl-function-url.png)
+![Live Cloud Function Accessing a Secret](docs/01-etl-function-url.png)
 
-The Cloud Build history shows a successful, targeted pipeline run. Note that only the trigger for Project 08 ran, not the trigger for Project 06, thanks to path-based filtering.
+The Cloud Build history confirms a successful, targeted pipeline execution. The build was correctly initiated by a change in this project's directory, while changes in other directories were ignored, highlighting the effectiveness of the path-based trigger filtering.
 
-![Successful Cloud Build](docs/02-etl-cloud-build-main.png)
+![Cloud Build History with Targeted Trigger](docs/02-etl-cloud-build-main.png)
 
-The Cloud Run console shows the deployed `my-etl-function` service, configured with the correct custom service account and public access for its trigger URL.
+The Cloud Run console displays the deployed my-etl-function service. It is correctly configured to run with a custom service account and allows public access for its trigger URL, as intended.
 
-![My ETL Function in Cloud Run](docs/03-my-etl-function-service.png)
+
+
+![Cloud Run Service Configuration Details](docs/03-my-etl-function-service.png)
 
 ---
 
