@@ -50,3 +50,8 @@ variable "connection_region" {
   description = "The full ID of the Secret Manager secret to inject."
   type        = string
 }
+
+variable "runtime_service_account_email" {
+  description = "The email of the pre-created service account the Cloud Run service will run as."
+  type        = string
+}

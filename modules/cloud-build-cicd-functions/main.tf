@@ -1,56 +1,6 @@
 # modules/cloud-build-cicd-functions/main.tf
 
-# 1. CREATE THE DEDICATED SERVICE ACCOUNT
-resource "google_service_account" "trigger_sa" {
-  project      = var.project_id
-  account_id   = "${var.app_name}-trigger-sa"
-  display_name = "Cloud Build Trigger SA for ${var.app_name}"
-}
-
-# 2. GRANT THE NECESSARY PERMISSIONS TO THE SERVICE ACCOUNT
-resource "google_project_iam_member" "registry_writer" {
-  project = var.project_id
-  role    = "roles/artifactregistry.writer"
-  member  = google_service_account.trigger_sa.member
-}
-
-resource "google_project_iam_member" "run_developer" {
-  project = var.project_id
-  role    = "roles/run.developer"
-  member  = google_service_account.trigger_sa.member
-}
-
-resource "google_project_iam_member" "log_writer" {
-  project = var.project_id
-  role    = "roles/logging.logWriter"
-  member  = google_service_account.trigger_sa.member
-}
-
-resource "google_project_iam_member" "run_admin" {
-  project = var.project_id
-  role    = "roles/run.admin"
-  member  = google_service_account.trigger_sa.member
-}
-
-resource "google_project_iam_member" "functions_developer" {
-  project = var.project_id
-  role    = "roles/cloudfunctions.developer"
-  member  = google_service_account.trigger_sa.member
-}
-
-resource "google_project_iam_member" "secret_accessor" {
-  project = var.project_id
-  role    = "roles/secretmanager.secretAccessor"
-  member  = google_service_account.trigger_sa.member
-}
-
-resource "google_service_account_iam_member" "self_user" {
-  service_account_id = google_service_account.trigger_sa.name
-  role               = "roles/iam.serviceAccountUser"
-  member             = google_service_account.trigger_sa.member
-}
-
-# 3. CREATE THE ARTIFACT REGISTRY REPOSITORY
+# 1. CREATE THE ARTIFACT REGISTRY REPOSITORY
 resource "google_artifact_registry_repository" "docker_repo" {
   project       = var.project_id
   location      = var.location
@@ -62,12 +12,13 @@ resource "google_artifact_registry_repository" "docker_repo" {
   }
 }
 
-# 4. CREATE THE MAIN BRANCH ("PRODUCTION") TRIGGER
+# 2. CREATE THE MAIN BRANCH ("PRODUCTION") TRIGGER
 resource "google_cloudbuild_trigger" "github_trigger" {
   project         = var.project_id
   name            = "deploy-${var.app_name}-on-push-to-main"
   location        = var.location
-  service_account = google_service_account.trigger_sa.id
+  # This now uses the SA provided by the platform
+  service_account = var.pipeline_service_account_id
   included_files = [
     "projects/08-automated-functions-deployment/apps/**"
   ]
@@ -100,29 +51,21 @@ resource "google_cloudbuild_trigger" "github_trigger" {
         "--region", var.location,
         "--allow-unauthenticated",
         "--set-secrets=API_KEY=${var.secret_id}:latest",
-        "--service-account=${google_service_account.trigger_sa.email}"
+        # This now uses the RUNTIME SA provided by the platform
+        "--service-account=${var.runtime_service_account_email}"
       ]
     }
   }
-
-  depends_on = [
-    google_project_iam_member.run_admin,
-    google_project_iam_member.functions_developer, 
-    google_project_iam_member.registry_writer,
-    google_project_iam_member.run_developer,
-    google_project_iam_member.secret_accessor,
-    google_service_account_iam_member.self_user,
-    google_project_iam_member.log_writer
-  ]
 }
 
-# 5. CREATE THE PULL REQUEST ("PREVIEW") TRIGGER
+# 3. CREATE THE PULL REQUEST ("PREVIEW") TRIGGER
 resource "google_cloudbuild_trigger" "github_trigger_pr" {
   project         = var.project_id
   name            = "deploy-${var.app_name}-preview-on-pr"
   description     = "Deploys a preview environment for pull requests."
   location        = var.location
-  service_account = google_service_account.trigger_sa.id
+  # This now uses the SA provided by the platform
+  service_account = var.pipeline_service_account_id
   included_files = [
     "projects/08-automated-functions-deployment/apps/**"
   ]
@@ -156,18 +99,9 @@ resource "google_cloudbuild_trigger" "github_trigger_pr" {
         "--region", var.location,
         "--allow-unauthenticated",
         "--set-secrets=API_KEY=${var.secret_id}:latest",
-        "--service-account=${google_service_account.trigger_sa.email}"
+        # This now uses the RUNTIME SA provided by the platform
+        "--service-account=${var.runtime_service_account_email}"
       ]
     }
   }
-
-  depends_on = [
-    google_project_iam_member.run_admin,
-    google_project_iam_member.functions_developer,
-    google_project_iam_member.registry_writer,
-    google_project_iam_member.run_developer,
-    google_project_iam_member.secret_accessor,
-    google_service_account_iam_member.self_user,
-    google_project_iam_member.log_writer
-  ]
 }
