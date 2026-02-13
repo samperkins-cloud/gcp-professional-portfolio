@@ -13,4 +13,4 @@ def hello_etl(request):
     name = 'World'
     
     # This line displays the secret
-    return f"Hello, {escape(name)}! The first 5 chars of the API key are: {API_KEY[:5]}"
+    return f"Hello, {escape(name)}! testing for Demo v2. {API_KEY[:5]}"
