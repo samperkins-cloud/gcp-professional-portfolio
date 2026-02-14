@@ -1,4 +1,4 @@
-# projects/08-automated-functions-deployment/.github/workflows/deploy.yml
+ # .github/workflows/deploy.yml
 
 name: Deploy ETL Function
 
@@ -13,8 +13,7 @@ on:
 
 jobs:
   deploy:
-    # This calls the reusable workflow from the root of this same repository
-    uses: ./.github/workflows/reusable-deploy-function.yml@main
+    uses: ./reusable-deploy-function.yml # Corrected local path
     with:
       project_id: 'my-portfolio-project-v2-484602'
       source_folder: './projects/08-automated-functions-deployment/apps'

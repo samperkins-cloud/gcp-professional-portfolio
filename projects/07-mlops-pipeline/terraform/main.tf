@@ -31,7 +31,7 @@ resource "google_storage_bucket" "pipeline_artifacts" {
   name                        = "${var.project_id}-${var.pipeline_name}-artifacts"
   location                    = var.location
   uniform_bucket_level_access = true
-  force_destroy               = true 
+  force_destroy               = true
   depends_on                  = [module.project_apis]
 }
 
@@ -48,10 +48,10 @@ resource "google_service_account" "vertex_pipeline_sa" {
 resource "google_project_iam_member" "pipeline_sa_permissions" {
   project = var.project_id
   for_each = toset([
-    "roles/aiplatform.user",         # To run Vertex AI jobs
-    "roles/storage.objectAdmin",     # To read/write artifacts in the GCS bucket
-    "roles/bigquery.dataViewer",     # To read training data from BigQuery
-    "roles/iam.serviceAccountUser"   # To allow Vertex to act as this SA
+    "roles/aiplatform.user",       # To run Vertex AI jobs
+    "roles/storage.objectAdmin",   # To read/write artifacts in the GCS bucket
+    "roles/bigquery.dataViewer",   # To read training data from BigQuery
+    "roles/iam.serviceAccountUser" # To allow Vertex to act as this SA
   ])
   role   = each.key
   member = google_service_account.vertex_pipeline_sa.member

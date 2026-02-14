@@ -46,7 +46,7 @@ variable "connection_region" {
   type        = string
 }
 
- variable "secret_id" {
+variable "secret_id" {
   description = "The full ID of the Secret Manager secret to inject."
   type        = string
 }
