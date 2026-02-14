@@ -41,7 +41,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: 'Build and Deploy Preview'
         id: deploy
@@ -87,7 +87,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: 'Build and Deploy to Production'
         run: |
