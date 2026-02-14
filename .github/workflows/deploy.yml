@@ -1,4 +1,4 @@
- # .github/workflows/deploy.yml
+# .github/workflows/deploy.yml
 
 name: Deploy ETL Function
 
@@ -13,6 +13,10 @@ on:
 
 jobs:
   deploy:
+    permissions:
+      pull-requests: write
+      id-token: write
+    
     uses: samperkins-cloud/gcp-professional-portfolio/.github/workflows/reusable-deploy-function.yml@main
     with:
       project_id: 'my-portfolio-project-v2-484602'
