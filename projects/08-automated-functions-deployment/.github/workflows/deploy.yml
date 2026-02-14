@@ -1,0 +1,24 @@
+# projects/08-automated-functions-deployment/.github/workflows/deploy.yml
+
+name: Deploy ETL Function
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'projects/08-automated-functions-deployment/apps/**'
+  pull_request:
+    paths:
+      - 'projects/08-automated-functions-deployment/apps/**'
+
+jobs:
+  deploy:
+    # This calls the reusable workflow from the root of this same repository
+    uses: ./.github/workflows/reusable-deploy-function.yml@main
+    with:
+      project_id: 'my-portfolio-project-v2-484602'
+      source_folder: './projects/08-automated-functions-deployment/apps'
+      app_name: 'my-etl-function'
+    secrets:
+      GCP_WIF_PROVIDER: ${{ secrets.GCP_WIF_PROVIDER }}
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SA_EMAIL }}

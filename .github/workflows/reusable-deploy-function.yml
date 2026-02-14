@@ -1,0 +1,99 @@
+# .github/workflows/reusable-deploy-function.yml
+
+name: Reusable Serverless Deployment
+
+on:
+  workflow_call:
+    inputs:
+      project_id:
+        required: true
+        type: string
+      source_folder:
+        required: true
+        type: string
+      app_name:
+        required: true
+        type: string
+      region:
+        required: false
+        type: string
+        default: 'us-central1'
+    secrets:
+      GCP_WIF_PROVIDER:
+        required: true
+      GCP_SERVICE_ACCOUNT:
+        required: true
+
+jobs:
+  deploy-preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      pull-requests: 'write'
+      id-token: 'write'
+
+    steps:
+      - name: 'Checkout Code'
+        uses: actions/checkout@v4
+
+      - name: 'Authenticate to GCP'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: 'Build and Deploy Preview'
+        id: deploy
+        run: |
+          # Note: We are using gcloud build/deploy directly here, bypassing our Terraform triggers
+          # This is a common pattern for GitHub Actions-native CI/CD
+          URL=$(gcloud run deploy ${{ inputs.app_name }}-pr-${{ github.event.number }} \
+            --image=us-central1-docker.pkg.dev/${{ inputs.project_id }}/cloud-run-source-deploy/${{ inputs.app_name }}:pr-${{ github.event.number }}-${{ github.sha }} \
+            --source=${{ inputs.source_folder }} \
+            --region=${{ inputs.region }} \
+            --allow-unauthenticated \
+            --service-account=${{ secrets.GCP_SERVICE_ACCOUNT }} \
+            --format='value(uri)')
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      - name: 'Post Preview URL as PR Comment'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const previewUrl = "${{ steps.deploy.outputs.url }}";
+            const commentBody = `🚀 Preview environment deployed successfully!
+
+            URL: **${previewUrl}**`;
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody
+            });
+
+  deploy-prod:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: 'Checkout Code'
+        uses: actions/checkout@v4
+
+      - name: 'Authenticate to GCP'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: 'Build and Deploy to Production'
+        run: |
+          gcloud run deploy ${{ inputs.app_name }} \
+            --image=us-central1-docker.pkg.dev/${{ inputs.project_id }}/cloud-run-source-deploy/${{ inputs.app_name }}:${{ github.sha }} \
+            --source=${{ inputs.source_folder }} \
+            --region=${{ inputs.region }} \
+            --allow-unauthenticated \
+            --service-account=${{ secrets.GCP_SERVICE_ACCOUNT }}
