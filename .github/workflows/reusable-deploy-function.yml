@@ -38,19 +38,31 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 'Authenticate to GCP'
+        id: 'auth'
         uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-      - name: 'Build and Deploy Preview'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: 'Docker - Authenticate to Artifact Registry'
+        run: gcloud auth configure-docker ${{ inputs.region }}-docker.pkg.dev
+
+      - name: 'Docker - Build and Tag Image'
+        run: |
+          docker build -t "${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/${{ inputs.app_name }}-repo/${{ inputs.app_name }}:pr-${{ github.event.number }}-${{ github.sha }}" "${{ inputs.source_folder }}"
+
+      - name: 'Docker - Push Image'
+        run: |
+          docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/${{ inputs.app_name }}-repo/${{ inputs.app_name }}:pr-${{ github.event.number }}-${{ github.sha }}"
+
+      - name: 'Deploy to Cloud Run'
         id: deploy
         run: |
-          # Note: We are using gcloud build/deploy directly here, bypassing our Terraform triggers
-          # This is a common pattern for GitHub Actions-native CI/CD
           URL=$(gcloud run deploy ${{ inputs.app_name }}-pr-${{ github.event.number }} \
-            --image=us-central1-docker.pkg.dev/${{ inputs.project_id }}/cloud-run-source-deploy/${{ inputs.app_name }}:pr-${{ github.event.number }}-${{ github.sha }} \
-            --source=${{ inputs.source_folder }} \
+            --image="${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/${{ inputs.app_name }}-repo/${{ inputs.app_name }}:pr-${{ github.event.number }}-${{ github.sha }}" \
             --region=${{ inputs.region }} \
             --allow-unauthenticated \
             --service-account=${{ secrets.GCP_SERVICE_ACCOUNT }} \
@@ -71,29 +83,3 @@ jobs:
               issue_number: context.issue.number,
               body: commentBody
             });
-
-  deploy-prod:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-
-    steps:
-      - name: 'Checkout Code'
-        uses: actions/checkout@v4
-
-      - name: 'Authenticate to GCP'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-
-      - name: 'Build and Deploy to Production'
-        run: |
-          gcloud run deploy ${{ inputs.app_name }} \
-            --image=us-central1-docker.pkg.dev/${{ inputs.project_id }}/cloud-run-source-deploy/${{ inputs.app_name }}:${{ github.sha }} \
-            --source=${{ inputs.source_folder }} \
-            --region=${{ inputs.region }} \
-            --allow-unauthenticated \
-            --service-account=${{ secrets.GCP_SERVICE_ACCOUNT }}
