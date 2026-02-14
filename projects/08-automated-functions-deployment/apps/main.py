@@ -13,4 +13,4 @@ def hello_etl(request):
     name = 'World'
     
     # This line displays the secret
-    return f"Hello, {escape(name)}! testing for Demo v2. {API_KEY[:5]}"
+    return f"Hello, {escape(name)}! This was deployed by a Reusable GitHub Action! The key is: {API_KEY[:5]}"
