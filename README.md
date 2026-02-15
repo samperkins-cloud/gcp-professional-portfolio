@@ -17,7 +17,8 @@ This portfolio follows a "crawl, walk, run" methodology, with each project build
 | **05: `scalable-web-app`** | Builds a highly available, auto-scaling, and load-balanced web application. | `Instance Groups`, `Load Balancing`, `Health Checks` |
 | **06: `automated-container-deployment`** | Implements a GCP-native CI/CD pipeline to deploy a containerized web app. | `Cloud Run`, `Cloud Build`, `Artifact Registry`, `Docker` |
 | **07: `mlops-pipeline`** | **(Conceptual)** Orchestrates a Vertex AI pipeline to automate ML model training and deployment. | `Vertex AI`, `Cloud Build`, `Cloud Storage` |
-| **08: `automated-functions-deployment`** | **(Platform)** Implements a reusable **GitHub Actions** CI/CD platform for serverless functions, featuring keyless auth, PR previews, and multi-workspace state. | `GitHub Actions`, `Workload Identity Federation`, `Terraform Cloud` |
+| **08: `automated-functions-deployment`** | **(Application)** Deploys a serverless function by consuming the reusable GitHub Actions platform. | `GitHub Actions`, `Cloud Run`, `Docker` |
+| **09: `platform-foundations`** | **(Platform)** Provisions the foundational resources (Service Accounts, Secrets) for the CI/CD platform using a separate, dedicated Terraform workspace. | `Terraform Cloud`, `IAM`, `Secret Manager` |
 
 ---
 
@@ -25,7 +26,10 @@ This portfolio follows a "crawl, walk, run" methodology, with each project build
 
 This portfolio demonstrates hands-on experience with modern cloud engineering practices:
 
-*   **Infrastructure as Code (IaC):** Proficient use of **`Terraform`** to define, provision, and manage all cloud resources in a repeatable and version-controlled manner. This includes authoring **reusable modules**, managing **remote state** with Terraform Cloud, and implementing a **multi-workspace platform architecture** to separate platform and application concerns.
+*   **Infrastructure as Code (IaC):** Proficient use of **`Terraform`** to define, provision, and manage all cloud resources in a repeatable and version-controlled manner. This includes:
+    *   Authoring **reusable modules** to create a library of standardized components.
+    *   Managing **remote state** with Terraform Cloud for collaborative development.
+    *   Implementing a **multi-workspace platform architecture** to securely separate platform (e.g., secrets, IAM) and application concerns.
 
 *   **CI/CD & GitOps:** Deep implementation of a fully automated GitOps workflow using **`GitHub Actions`**. This includes authoring **reusable workflows** to create a centralized deployment platform. The platform automatically builds **`Docker`** containers, pushes them to **`Artifact Registry`**, and deploys to **`Cloud Run`**, providing a complete "source-to-prod" lifecycle.
 
