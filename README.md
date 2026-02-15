@@ -1,6 +1,6 @@
 # GCP Cloud Engineer Portfolio
 
-This repository is a curated collection of enterprise-grade cloud infrastructure projects, showcasing a journey from foundational cloud concepts to advanced DevOps and serverless deployments on Google Cloud Platform (GCP). Every project is provisioned and managed entirely through Infrastructure as Code (IaC) using Terraform.
+This repository is a curated collection of enterprise-grade cloud infrastructure projects, showcasing a journey from foundational cloud concepts to advanced, platform-oriented DevOps. Every project is provisioned and managed entirely through Infrastructure as Code (IaC) using Terraform, with the later projects leveraging a full GitOps workflow using **GitHub Actions**.
 
 ---
 
@@ -12,12 +12,12 @@ This portfolio follows a "crawl, walk, run" methodology, with each project build
 | :--- | :--- | :--- |
 | **01: `hello-cloud-vm`** | Deploys a basic web server on a single Compute Engine VM. | `Compute Engine`, `Startup Scripts` |
 | **02: `secure-custom-vpc`** | Establishes a secure, reusable VPC network as a foundational Terraform module. | `VPC`, `Firewall Rules`, `Terraform Modules` |
-| **03: `web-server-in-vpc`** | Deploys a web server securely inside the custom VPC module, demonstrating module composition. | `Compute Engine`, `VPC`, `Module Reusability` |
-| **04: `automated-data-pipeline`** | Creates an automated, event-driven data processing pipeline using serverless components. | `Cloud Functions`, `Cloud Storage`, `Pub/Sub` |
+| **03: `web-server-in-vpc`** | Deploys a web server securely inside the custom VPC module. | `Compute Engine`, `VPC`, `Module Reusability` |
+| **04: `automated-data-pipeline`** | Creates an automated, event-driven data processing pipeline. | `Cloud Functions`, `Cloud Storage`, `Pub/Sub` |
 | **05: `scalable-web-app`** | Builds a highly available, auto-scaling, and load-balanced web application. | `Instance Groups`, `Load Balancing`, `Health Checks` |
-| **06: `automated-container-deployment`** | Implements a full CI/CD pipeline to automatically deploy a containerized web app. | `Cloud Run`, `Cloud Build`, `Artifact Registry`, `Docker` |
+| **06: `automated-container-deployment`** | Implements a GCP-native CI/CD pipeline to deploy a containerized web app. | `Cloud Run`, `Cloud Build`, `Artifact Registry`, `Docker` |
 | **07: `mlops-pipeline`** | **(Conceptual)** Orchestrates a Vertex AI pipeline to automate ML model training and deployment. | `Vertex AI`, `Cloud Build`, `Cloud Storage` |
-| **08: `automated-functions-deployment`** | Adapts the CI/CD architecture to deploy containerized ETL functions with secure secret management. | `Cloud Functions (2nd Gen)`, `Secret Manager`, `Advanced IAM` |
+| **08: `automated-functions-deployment`** | **(Platform)** Implements a reusable **GitHub Actions** CI/CD platform for serverless functions, featuring keyless auth, PR previews, and multi-workspace state. | `GitHub Actions`, `Workload Identity Federation`, `Terraform Cloud` |
 
 ---
 
@@ -25,16 +25,20 @@ This portfolio follows a "crawl, walk, run" methodology, with each project build
 
 This portfolio demonstrates hands-on experience with modern cloud engineering practices:
 
-*   **Infrastructure as Code (IaC):** Proficient use of **`Terraform`** to define, provision, and manage all cloud resources in a repeatable and version-controlled manner. This includes authoring **reusable modules** and managing **remote state** with Terraform Cloud for collaborative, enterprise-grade workflows.
+*   **Infrastructure as Code (IaC):** Proficient use of **`Terraform`** to define, provision, and manage all cloud resources in a repeatable and version-controlled manner. This includes authoring **reusable modules**, managing **remote state** with Terraform Cloud, and implementing a **multi-workspace platform architecture** to separate platform and application concerns.
 
-*   **CI/CD & Automation:** Deep implementation of a fully automated GitOps workflow. Code pushed to GitHub automatically triggers **`Cloud Build`** pipelines, containerizes applications with **`Docker`**, and deploys them on a fully managed, serverless platform (**`Cloud Run`**). This includes building **ephemeral preview environments** for Pull Requests and implementing **monorepo path filtering** to optimize pipeline execution.
+*   **CI/CD & GitOps:** Deep implementation of a fully automated GitOps workflow using **`GitHub Actions`**. This includes authoring **reusable workflows** to create a centralized deployment platform. The platform automatically builds **`Docker`** containers, pushes them to **`Artifact Registry`**, and deploys to **`Cloud Run`**, providing a complete "source-to-prod" lifecycle.
 
-*   **Secure DevOps (DevSecOps):** Foundational knowledge of cloud networking, including the design and implementation of custom **`VPCs`** and granular **`Firewall Rules`**. Deep, practical experience implementing the **Principle of Least Privilege** for service accounts and securely managing application secrets with **`Secret Manager`** and IAM bindings.
+*   **Advanced Automation Features:** The CI/CD platform includes enterprise-grade features such as:
+    *   **Ephemeral Preview Environments:** Automatically deploys a unique, isolated preview environment for every Pull Request and posts the live URL back as a PR comment.
+    *   **Monorepo Path Filtering:** Intelligently triggers workflows only when relevant code paths are changed, optimizing execution in a multi-project repository.
 
-*   **Systematic Debugging & Problem Solving:** Demonstrated ability to diagnose and resolve complex, multi-layered issues across the entire stack, including:
-    *   **Advanced IAM:** Resolved silent permission failures (`403 Forbidden`) by diagnosing missing permissions (`run.services.setIamPolicy`) and the distinction between pipeline identity and runtime identity.
-    *   **Terraform State:** Mastered "state drift" issues by using targeted `terraform destroy -target` commands to force-recreate stuck resources.
-    *   **Application & Container Runtime:** Debugged container health check failures by correcting `Dockerfile` command execution and fixing application-level `ImportError` and `IndentationError` bugs by analyzing runtime logs.
+*   **Secure DevOps (DevSecOps):** Deep, practical experience implementing the **Principle of Least Privilege**. This includes:
+    *   **Keyless Authentication:** Configuring **`Workload Identity Federation`** to allow GitHub Actions to securely authenticate to GCP without using long-lived service account keys.
+    *   **Secret Management:** Building a secure, end-to-end workflow to manage application secrets with **`Secret Manager`** and inject them into running services at deploy time.
+    *   **IAM & Networking:** Designing custom **`VPCs`**, granular **`Firewall Rules`**, and debugging complex, multi-layered IAM permission failures.
+
+*   **Systematic Debugging & Problem Solving:** Demonstrated ability to diagnose and resolve complex issues across the entire stack, from application code (`IndentationError`) and container runtimes (`CMD` contract) to Terraform state (`state drift`) and advanced IAM "handoff" failures between services.
 
 ---
 
@@ -42,8 +46,9 @@ This portfolio demonstrates hands-on experience with modern cloud engineering pr
 
 This repository is organized to reflect a professional, multi-project environment.
 
-*   `**/modules/**`: Contains reusable, generic Terraform modules designed to be the building blocks of any project. These modules are self-contained and configurable through input variables.
-*   `**/projects/**`: Contains the root configurations for each standalone project listed above. Each project's `main.tf` file composes one or more modules to build a complete architecture.
+*   `**/modules/**`: Contains reusable, generic Terraform modules designed to be the building blocks of any project.
+*   `**/projects/**`: Contains the root configurations for each standalone project. Each project's `main.tf` file composes one or more modules to build a complete architecture.
+*   `**/.github/workflows/**`: Contains the centralized, reusable GitHub Actions workflows that form the core of the CI/CD platform.
 
 ---
 
