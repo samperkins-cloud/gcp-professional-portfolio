@@ -1,4 +1,4 @@
- # Testing 
+ # Final test of the multi-workspace platform
 import os
 import functions_framework
 from markupsafe import escape
