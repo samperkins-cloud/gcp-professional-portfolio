@@ -58,22 +58,34 @@ jobs:
         run: |
           docker push "${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/${{ inputs.app_name }}-repo/${{ inputs.app_name }}:pr-${{ github.event.number }}-${{ github.sha }}"
 
+      # --- MODIFIED STEP ---
+      # The 'id' and output capturing have been removed from this step.
+      # Its only job is to deploy.
       - name: 'Deploy to Cloud Run'
-        id: deploy
         run: |
-          URL=$(gcloud run deploy ${{ inputs.app_name }}-pr-${{ github.event.number }} \
+          gcloud run deploy ${{ inputs.app_name }}-pr-${{ github.event.number }} \
             --image="${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/${{ inputs.app_name }}-repo/${{ inputs.app_name }}:pr-${{ github.event.number }}-${{ github.sha }}" \
             --region=${{ inputs.region }} \
             --allow-unauthenticated \
-            --service-account=${{ secrets.GCP_SERVICE_ACCOUNT }} \
-            --format='value(uri)')
+            --service-account=${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      # --- NEW STEP ---
+      # This new step reliably gets the URL after the service has been deployed.
+      - name: 'Get Preview URL'
+        id: get_url
+        run: |
+          URL=$(gcloud run services describe ${{ inputs.app_name }}-pr-${{ github.event.number }} \
+            --region=${{ inputs.region }} \
+            --format='value(status.url)')
           echo "url=$URL" >> $GITHUB_OUTPUT
 
+      # --- MODIFIED STEP ---
+      # This step now references the new 'get_url' step for the output.
       - name: 'Post Preview URL as PR Comment'
         uses: actions/github-script@v7
         with:
           script: |
-            const previewUrl = "${{ steps.deploy.outputs.url }}";
+            const previewUrl = "${{ steps.get_url.outputs.url }}";
             const commentBody = `🚀 Preview environment deployed successfully!
 
             URL: **${previewUrl}**`;
