@@ -55,3 +55,13 @@ variable "runtime_service_account_email" {
   description = "The email of the pre-created service account the Cloud Run service will run as."
   type        = string
 }
+
+variable "pipeline_service_account_id" {
+  description = "The full ID of the service account for the Cloud Build trigger to use."
+  type        = string
+}
+
+variable "runtime_service_account_email" {
+  description = "The email of the pre-created service account the Cloud Run service will run as."
+  type        = string
+}

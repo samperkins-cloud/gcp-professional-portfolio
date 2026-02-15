@@ -23,7 +23,7 @@ module "project_apis" {
 
 # --- 2. Automated CI/CD Deployment Pipeline for Cloud Functions ---
 module "cicd_pipeline" {
-  source                        = "../../modules/cloud-build-cicd-functions"
+  source                        = "../../../modules/cloud-build-cicd-functions" # Corrected path
   project_id                    = var.project_id
   location                      = var.location
   app_name                      = var.app_name
@@ -32,7 +32,11 @@ module "cicd_pipeline" {
   app_source_path               = var.app_source_path
   connection_name               = var.connection_name
   connection_region             = var.location
-  depends_on                    = [module.project_apis]
+  
+  # --- Values consumed from the Platform Workspace ---
   secret_id                     = data.terraform_remote_state.platform.outputs.app_secret_id
   runtime_service_account_email = data.terraform_remote_state.platform.outputs.app_service_account_email
+  pipeline_service_account_id   = data.terraform_remote_state.platform.outputs.pipeline_service_account_id # <-- ADD THIS LINE
+
+  depends_on                    = [module.project_apis]
 }
