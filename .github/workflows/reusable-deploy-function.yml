@@ -1,4 +1,33 @@
-# .github/workflows/reusable-deploy-function.yml
+ # .github/workflows/reusable-deploy-function.yml
+
+    # =================================================================================
+    # Reusable Workflow for Deploying Serverless Applications to Google Cloud
+    # =================================================================================
+    #
+    # This workflow provides a standardized, secure, and automated pipeline for
+    # deploying containerized applications (including 2nd Gen Cloud Functions) to
+    # Google Cloud Run.
+    #
+    # It supports both production deployments on a push to `main` and the creation
+    # of temporary preview environments for Pull Requests.
+    #
+    # ---------------------------------------------------------------------------------
+    # Usage Example (in the application's workflow file):
+    # ---------------------------------------------------------------------------------
+    #
+    # jobs:
+    #   deploy:
+    #     uses: your-org/your-repo/.github/workflows/reusable-deploy-function.yml@main
+    #     with:
+    #       project_id: 'your-gcp-project-id'
+    #       source_folder: './path/to/your/app/code'
+    #       app_name: 'your-app-name'
+    #       region: 'us-central1' # Optional, defaults to us-central1
+    #     secrets:
+    #       GCP_WIF_PROVIDER: ${{ secrets.GCP_WIF_PROVIDER }}
+    #       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SA_EMAIL }}
+    #
+    # ---------------------------------------------------------------------------------
 
 name: Reusable Serverless Deployment
 
