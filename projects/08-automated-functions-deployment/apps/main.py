@@ -13,4 +13,4 @@ def hello_etl(request):
     name = 'World'
     
     # This line displays the secret
-    return f"Hello, {escape(name)}! This is the FINAL PR PREVIEW test! The key is: {API_KEY[:5]}"
+    return f"Hello, {escape(name)}! Testing the workflow for PRs. The key is: {API_KEY[:5]}"
