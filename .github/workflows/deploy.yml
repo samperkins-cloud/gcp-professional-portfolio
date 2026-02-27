@@ -1,4 +1,4 @@
-# .github/workflows/deploy.yml
+#deploy.yml
 
 name: Deploy ETL Function
 
