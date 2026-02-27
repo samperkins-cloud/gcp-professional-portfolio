@@ -11,4 +11,4 @@ def hello_etl(request):
     """HTTP Cloud Function that securely uses a secret."""
     name = 'World'
     
-    return f"Hello, {escape(name)}! FINAL Testing the workflow for PRs!! The key is: {API_KEY[:5]}"
+    return f"Hello, {escape(name)}! FINAL FINAL Testing the workflow for PRs!! The key is: {API_KEY[:5]}"
