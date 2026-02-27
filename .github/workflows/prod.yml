@@ -1,13 +1,16 @@
 name: Production Deployment
+
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'projects/08-automated-functions-deployment/apps/**'
+
+permissions:
+  contents: 'read'
+  id-token: 'write'      # Needed for GCP Workload Identity Federation
 
 jobs:
   deploy-production:
-    uses: your-org/platform-repo/.github/workflows/deploy-function.yml@main
+    uses: samperkins-cloud/gcp-professional-portfolio/.github/workflows/deploy-function.yml@main
     with:
       environment: 'production'
       function_name: 'my-etl-function'
