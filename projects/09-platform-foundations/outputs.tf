@@ -14,3 +14,8 @@ output "pipeline_service_account_id" {
   description = "The full ID of the service account for the Cloud Build trigger."
   value       = google_service_account.pipeline_sa.id
 }
+
+output "schedule_service_account_email" {
+  description = "The email of the dedicated scheduler account."
+  value = google_service_account.scheduler_sa.email
+}

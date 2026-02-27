@@ -73,3 +73,10 @@ resource "google_project_iam_member" "app_sa_secret_accessor" {
   role    = "roles/secretmanager.secretAccessor"
   member  = google_service_account.app_sa.member
 }
+
+# --- 3. Scheduler Identity ---
+resource "google_service_account" "scheduler_sa" {
+  project      = var.project_id
+  account_id   = "${var.app_name}-scheduler-sa"
+  display_name = "Scheduler SA for ${var.app_name}"
+}
