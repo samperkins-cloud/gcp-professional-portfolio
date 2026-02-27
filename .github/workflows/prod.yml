@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: 'read'
+  pull-requests: 'write' # Added to satisfy the central engine's requirements
   id-token: 'write'      # Needed for GCP Workload Identity Federation
 
 jobs:
