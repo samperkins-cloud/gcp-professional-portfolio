@@ -1,0 +1,18 @@
+name: Production Deployment
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'projects/08-automated-functions-deployment/apps/**'
+
+jobs:
+  deploy-production:
+    uses: your-org/platform-repo/.github/workflows/deploy-function.yml@main
+    with:
+      environment: 'production'
+      function_name: 'my-etl-function'
+      source_dir: './projects/08-automated-functions-deployment/apps/'
+      image_uri_base: 'us-central1-docker.pkg.dev/my-portfolio-project-v2-484602/my-etl-function-repo/my-etl-function'
+    secrets:
+      GCP_WIF_PROVIDER: ${{ secrets.GCP_WIF_PROVIDER }}
+      GCP_SA_EMAIL: ${{ secrets.GCP_SA_EMAIL }}
