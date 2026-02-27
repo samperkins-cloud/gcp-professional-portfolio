@@ -30,24 +30,20 @@
           - name: 'Docker - Authenticate to Artifact Registry'
             run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
-          - name: 'Docker - Build and Tag Image'
+          - name: 'Docker - Build and Push Image'
             run: |
-              docker build -t "us-central1-docker.pkg.dev/my-portfolio-project-v2-484602/my-etl-function-repo/my-etl-function:${{ github.sha }}" "./projects/08-automated-functions-deployment/apps"
-
-          - name: 'Docker - Push Image'
-            run: |
-              docker push "us-central1-docker.pkg.dev/my-portfolio-project-v2-484602/my-etl-function-repo/my-etl-function:${{ github.sha }}"
+              PR_TAG="pr-${{ github.event.pull_request.number }}"
+              IMAGE_URI="us-central1-docker.pkg.dev/.../my-etl-function:$PR_TAG"
+              
+              docker build -t $IMAGE_URI ./projects/08-automated-functions-deployment/apps/
+              docker push $IMAGE_URI
 
           - name: 'Deploy to Preview Environment'
-            id: deploy
             run: |
-              URL=$(gcloud run deploy my-etl-function-pr-${{ github.event.number }} \
-                --image="us-central1-docker.pkg.dev/my-portfolio-project-v2-484602/my-etl-function-repo/my-etl-function:${{ github.sha }}" \
-                --region=us-central1 \
-                --allow-unauthenticated \
-                --service-account=${{ secrets.GCP_SA_EMAIL }} \
-                --format='value(uri)')
-              echo "url=$URL" >> $GITHUB_OUTPUT
+              PR_TAG="pr-${{ github.event.pull_request.number }}"
+              gcloud run deploy my-etl-function-pr-${{ github.event.pull_request.number }} \
+                --image="us-central1-docker.pkg.dev/.../my-etl-function:$PR_TAG" \
+                # ... other args
 
           - name: 'Post Preview URL as PR Comment'
             uses: actions/github-script@v7
