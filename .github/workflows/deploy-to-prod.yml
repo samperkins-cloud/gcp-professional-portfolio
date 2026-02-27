@@ -1,38 +1,56 @@
 # .github/workflows/deploy-to-prod.yml
-    name: Deploy to Production
+name: Deploy to Production
 
-    on:
-      push:
-        branches: [ main ]
-        paths:
-          - 'projects/08-automated-functions-deployment/apps/**'
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'projects/08-automated-functions-deployment/apps/**'
 
-    jobs:
-      promote-to-prod:
-        runs-on: ubuntu-latest
-        permissions:
-          contents: 'read'
-          id-token: 'write'
+jobs:
+  promote-to-prod:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
 
-        steps:
-        - name: Checkout
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: 0 # Fetch all history to be safe
+    steps:
+      - name: 'Authenticate to GCP'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
 
-        - name: Extract PR Number from Merge Commit
-          id: get_pr
-          run: |
-            PR_NUMBER=$(git log -1 --pretty=%B | grep -oP '(?<=#)\d+' | head -1)
-            if [ -z "$PR_NUMBER" ]; then
-              echo "Could not find PR number in merge commit. This was likely a direct push."
-              # You could choose to fail here, or build a new image as a fallback
-              exit 1
-            fi
-            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
 
-        - name: 'Deploy to Production'
-          run: |
-            PR_TAG="pr-${{ steps.get_pr.outputs.pr_number }}"
-            gcloud run deploy my-etl-function \
-              --image="us-central1-docker.pkg.dev/.../my-etl-function:$PR_TAG" \
+      - name: 'Checkout Code with Full History'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necessary to read the commit history
+
+      - name: 'Extract PR Number from Merge Commit'
+        id: get_pr
+        run: |
+          # This script finds the PR number (e.g., #26) from the latest commit message
+          PR_NUMBER=$(git log -1 --pretty=%B | grep -oP '(?<=#)\d+' | head -1)
+          if [ -z "$PR_NUMBER" ]; then
+            echo "Error: This workflow should only be triggered by merging a PR."
+            exit 1
+          fi
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: 'Deploy to Production'
+        run: |
+          # Construct the tag using the PR number we found
+          PR_TAG="pr-${{ steps.get_pr.outputs.pr_number }}"
+          
+          # Construct the full, correct image URI
+          IMAGE_URI="us-central1-docker.pkg.dev/my-portfolio-project-v2-484602/my-etl-function-repo/my-etl-function:$PR_TAG"
+          
+          # Deploy the pre-built image from Artifact Registry
+          gcloud run deploy my-etl-function \
+            --image=$IMAGE_URI \
+            --region=us-central1 \
+            --allow-unauthenticated \
+            --service-account=${{ secrets.GCP_SA_EMAIL }}
