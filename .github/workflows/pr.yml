@@ -1,99 +1,17 @@
-name: Shared Serverless Deployment
+name: Preview Deployment
 
 on:
-  workflow_call:
-    inputs:
-      environment:
-        description: 'Target environment: "preview" or "production"'
-        required: true
-        type: string
-      function_name:
-        description: 'Base name of the Cloud Run service'
-        required: true
-        type: string
-      source_dir:
-        description: 'Directory containing the Dockerfile'
-        required: true
-        type: string
-      image_uri_base:
-        description: 'Base Artifact Registry URI (without the tag)'
-        required: true
-        type: string
-    secrets:
-      GCP_WIF_PROVIDER:
-        required: true
-      GCP_SA_EMAIL:
-        required: true
+  pull_request:
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: 'read'
-      pull-requests: 'write'
-      id-token: 'write'
-
-    steps:
-      - name: 'Checkout Code'
-        uses: actions/checkout@v4
-
-      - name: 'Authenticate to GCP'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account: ${{ secrets.GCP_SA_EMAIL }}
-
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
-
-      - name: 'Docker - Authenticate to Artifact Registry'
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
-
-      - name: 'Set Unique Image Tag (Git SHA)'
-        id: set_tag
-        # Uses the first 7 characters of the Git commit SHA for a reliable, unique tag
-        run: echo "tag=sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
-
-      - name: 'Docker - Build and Push Image'
-        run: |
-          IMAGE_URI="${{ inputs.image_uri_base }}:${{ steps.set_tag.outputs.tag }}"
-          docker build -t $IMAGE_URI ${{ inputs.source_dir }}
-          docker push $IMAGE_URI
-
-      - name: 'Determine Cloud Run Service Name'
-        id: set_service_name
-        run: |
-          if [ "${{ inputs.environment }}" == "preview" ]; then
-            # Appends the PR number for isolated preview environments
-            echo "service_name=${{ inputs.function_name }}-pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
-          else
-            # Uses the base name for production
-            echo "service_name=${{ inputs.function_name }}" >> $GITHUB_OUTPUT
-          fi
-
-      - name: 'Deploy to Cloud Run'
-        id: deploy
-        run: |
-          IMAGE_URI="${{ inputs.image_uri_base }}:${{ steps.set_tag.outputs.tag }}"
-          URL=$(gcloud run deploy ${{ steps.set_service_name.outputs.service_name }} \
-            --image=$IMAGE_URI \
-            --region=us-central1 \
-            --allow-unauthenticated \
-            --service-account=${{ secrets.GCP_SA_EMAIL }} \
-            --format='value(uri)')
-          echo "url=$URL" >> $GITHUB_OUTPUT
-
-      - name: 'Post Preview URL as PR Comment'
-        # Only run this step if we are building a preview environment
-        if: ${{ inputs.environment == 'preview' }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const previewUrl = "${{ steps.deploy.outputs.url }}";
-            const commentBody = `✅ Build successful! Preview deployed: **${previewUrl}**`;
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: commentBody
-            });
+  deploy-preview:
+    # This calls your engine workflow locally
+    uses: ./.github/workflows/deploy-function.yml
+    with:
+      environment: 'preview'
+      function_name: 'my-etl-function'
+      source_dir: './projects/08-automated-functions-deployment/apps/'
+      image_uri_base: 'us-central1-docker.pkg.dev/my-portfolio-project-v2-484602/my-etl-function-repo/my-etl-function'
+    secrets:
+      GCP_WIF_PROVIDER: ${{ secrets.GCP_WIF_PROVIDER }}
+      GCP_SA_EMAIL: ${{ secrets.GCP_SA_EMAIL }}
