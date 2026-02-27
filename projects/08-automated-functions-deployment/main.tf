@@ -23,7 +23,7 @@ module "project_apis" {
 
 # --- 2. Automated CI/CD Deployment Pipeline for Cloud Functions ---
 module "cicd_pipeline" {
-  source                        = "../../../modules/cloud-build-cicd-functions" # Corrected path
+  source                        = "../../modules/cloud-build-cicd-functions" 
   project_id                    = var.project_id
   location                      = var.location
   app_name                      = var.app_name
