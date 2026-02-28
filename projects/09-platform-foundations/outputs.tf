@@ -15,7 +15,7 @@ output "pipeline_service_account_id" {
   value       = google_service_account.pipeline_sa.id
 }
 
-output "schedule_service_account_email" {
+output "scheduler_service_account_email" {
   description = "The email of the dedicated scheduler account."
   value = google_service_account.scheduler_sa.email
 }
