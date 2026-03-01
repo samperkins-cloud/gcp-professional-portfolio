@@ -5,8 +5,8 @@ on:
 
 permissions:
   contents: 'read'
-  pull-requests: 'write' # Needed to post the PR comment
-  id-token: 'write'      # Needed for GCP Workload Identity Federation
+  pull-requests: 'write'
+  id-token: 'write'
 
 jobs:
   deploy-preview:
@@ -19,3 +19,26 @@ jobs:
     secrets:
       GCP_WIF_PROVIDER: ${{ secrets.GCP_WIF_PROVIDER }}
       GCP_SA_EMAIL: ${{ secrets.GCP_SA_EMAIL }}
+
+
+# name: Preview Deployment
+
+# on:
+#   pull_request:
+
+# permissions:
+#   contents: 'read'
+#   pull-requests: 'write' # Needed to post the PR comment
+#   id-token: 'write'      # Needed for GCP Workload Identity Federation
+
+# jobs:
+#   deploy-preview:
+#     uses: samperkins-cloud/gcp-professional-portfolio/.github/workflows/deploy-function.yml@main
+#     with:
+#       environment: 'preview'
+#       function_name: 'my-etl-function'
+#       source_dir: './projects/08-automated-functions-deployment/apps/'
+#       image_uri_base: 'us-central1-docker.pkg.dev/my-portfolio-project-v2-484602/my-etl-function-repo/my-etl-function'
+#     secrets:
+#       GCP_WIF_PROVIDER: ${{ secrets.GCP_WIF_PROVIDER }}
+#       GCP_SA_EMAIL: ${{ secrets.GCP_SA_EMAIL }}
