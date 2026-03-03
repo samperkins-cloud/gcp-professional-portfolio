@@ -207,12 +207,20 @@ jobs:
         id: deploy
         run: |
           IMAGE_URI="${{ inputs.image_uri_base }}:${{ steps.set_tag.outputs.tag }}"
-          URL=$(gcloud run deploy ${{ steps.set_service_name.outputs.service_name }} \
+          
+          # 1. Deploy the service
+          gcloud run deploy ${{ steps.set_service_name.outputs.service_name }} \
             --image=$IMAGE_URI \
             --region=us-central1 \
             --allow-unauthenticated \
-            --service-account=${{ secrets.GCP_SA_EMAIL }} \
-            --format='value(uri)')
+            --service-account=${{ secrets.GCP_SA_EMAIL }}
+            
+          # 2. Grab the URL now that the service is running
+          URL=$(gcloud run services describe ${{ steps.set_service_name.outputs.service_name }} \
+            --region=us-central1 \
+            --format='value(status.url)')
+            
+          # 3. Save it to GitHub outputs
           echo "url=$URL" >> $GITHUB_OUTPUT
 
       - name: 'Post Preview URL as PR Comment'
